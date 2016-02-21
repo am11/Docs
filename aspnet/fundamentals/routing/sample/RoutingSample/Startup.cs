@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
+﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
@@ -23,10 +21,16 @@ namespace RoutingSample
         {
             app.UseIISPlatformHandler();
 
-            app.UseRouter(new TemplateRoute(
-                new HelloWorldRouter(),
+            var routeBuilder = new RouteBuilder();
+
+            routeBuilder.ServiceProvider = app.ApplicationServices;
+
+            routeBuilder.Routes.Add(new TemplateRoute(
+                new HelloRouter(),
                 "hello/{name:alpha}",
                 app.ApplicationServices.GetService<IInlineConstraintResolver>()));
+
+            app.UseRouter(routeBuilder.Build());
 
 
             app.Run(async (context) =>
@@ -37,30 +41,5 @@ namespace RoutingSample
 
         // Entry point for the application.
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);
-    }
-
-    public class HelloWorldRouter : IRouter
-    {
-        public async Task RouteAsync(RouteContext context)
-        {
-            object name;
-            if (!context.RouteData.Values.TryGetValue("name", out name))
-            {
-                return;
-            }
-            try
-            {
-                await context.HttpContext.Response.WriteAsync($"Hi {name}!");
-            }
-            finally
-            {
-                context.IsHandled = true;
-            }
-        }
-
-        public VirtualPathData GetVirtualPath(VirtualPathContext context)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }
