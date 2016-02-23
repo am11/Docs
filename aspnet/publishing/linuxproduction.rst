@@ -158,7 +158,7 @@ Start our web application on startup
 In our case, since we are using supervisor to manage our application, the application will be automatically started by supervisor. Supervisor uses a System V Init script to run as a daemon on system boot and will susbsequently launch your application. If you chose not to use supervisor or an equivalent tool, you will need to write a ``systemd`` or ``upstart`` or ``SysVinit`` script to start your application on startup.
 
 Recovering from an ungraceful shutdown
------------------------------------
+--------------------------------------
 
 If your web application is terminated with a ``SIGKILL`` signal or the if host experiences a loss of power, ``Kestrel`` will not shut down gracefully and remove the socket file. To prevent subsequents attempts to restart your application from failing due to ``EADDRINUSE address already in use``, you can modify the shell script used to bootstrap your application to remove the socket file if present.
 
